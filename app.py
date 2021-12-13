@@ -116,7 +116,7 @@ def api_validate():
 @app.route('/api/info')
 def api_info():
     session_id = request.args.get('session_id')
-    return okta.Validate_Session(session_id)
+    return okta.info(session_id)
 
 # init
 if __name__ == '__main__':
