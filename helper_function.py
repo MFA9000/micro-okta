@@ -74,6 +74,14 @@ def Validate_Session(session_id):
     else:
         return False
         
+def info(session_id):
+    raw='https://%s/api/v1/sessions/%s'%(org,session_id)
+    header = {'Accept' : 'application/json' , 'Content-Type' : 'application/json', 'Authorization' : 'SSWS %s'%(api)}
+    re=requests.get(raw,headers=header)
+    re=json.loads(re.text)
+    return re
+        
+        
 def extract(callback):
     inst= callback.split('/')
     return inst[0]+'//'+inst[2]

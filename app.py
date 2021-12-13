@@ -32,23 +32,20 @@ def login():
         session["user"]=username
         session["session_token"]=session_token
         okta.Send_OTP(username)
-        print(session['domain']+'/login_callback')
         return redirect(session['domain']+'/login_callback')
     return redirect(session['domain']+'/login')
+
 
 @app.route('/verify-otp')	
 def otp():
     username = session["user"]
     pin= request.args.get('pin')
     if okta.Verify_OTP(username,pin):
-        print('1')
         session_token = session["session_token"]
         flag,data=okta.Create_Session(session_token)
         if flag:
-            print('2')
             session["session_id"]=data[0]
             session["user_id"]=data[1]   
-            print(session['callback'])
             return redirect(session['callback'])
     session["session_token"]=''
     return redirect(session['domain']+'/login')
@@ -87,6 +84,39 @@ def Logout():
     session['user_id']=''
     return redirect(session['callback'])
     
+@app.route('/api/login')
+def api_login():
+    username = request.args.get('email')
+    password = request.args.get('pass')
+    flag,session_token=okta.Session_token(username,password)
+    if flag:
+        okta.Send_OTP(username)
+        return jsonify(Auth='Success',token=session_token,email=username)
+    return jsonify(Auth='Fail')
+
+@app.route('/api/verify-otp')	
+def api_otp():
+    username = request.args.get('email')
+    pin = request.args.get('pin')
+    session_token = request.args.get('token')
+    if okta.Verify_OTP(username,pin):
+        flag,data=okta.Create_Session(session_token)
+        if flag: 
+            return jsonify(Auth='Success',session_id=data[0],user_id=data[1],email=username)
+    return jsonify(Auth='Fail')
+
+@app.route('/api/validate')
+def api_validate():
+    session_id = request.args.get('session_id')
+    if okta.Validate_Session(session_id):
+        return jsonify(Auth='Success')
+    else:
+        return jsonify(Auth='Fail')
+
+@app.route('/api/info')
+def api_info():
+    session_id = request.args.get('session_id')
+    return okta.Validate_Session(session_id)
 
 # init
 if __name__ == '__main__':
