@@ -80,7 +80,13 @@ def info(session_id):
     re=requests.get(raw,headers=header)
     re=json.loads(re.text)
     return re
-        
+
+def name(session_id):
+    raw='https://%s/api/v1/sessions/%s'%(org,session_id)
+    header = {'Accept' : 'application/json' , 'Content-Type' : 'application/json', 'Authorization' : 'SSWS %s'%(api)}
+    re=requests.get(raw,headers=header)
+    re=json.loads(re.text)
+    return re["_links"]["user"]["name"]
         
 def extract(callback):
     inst= callback.split('/')

@@ -75,7 +75,6 @@ def validate():
     else:
         return jsonify({'key':0})
 
-        
 @app.route('/logout')
 def Logout():
     session['user']=''
@@ -83,7 +82,8 @@ def Logout():
     session['session_id']=''
     session['user_id']=''
     return redirect(session['callback'])
-    
+
+  
 @app.route('/api/login')
 def api_login():
     username = request.args.get('email')
@@ -118,6 +118,11 @@ def api_info():
     session_id = request.args.get('session_id')
     return okta.info(session_id)
 
+@app.route('/api/name')
+def api_name():
+    session_id = request.args.get('session_id')
+    return okta.name(session_id)
+    
 # init
 if __name__ == '__main__':
     app.run(debug=True)
